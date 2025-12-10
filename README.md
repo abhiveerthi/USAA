@@ -114,8 +114,16 @@ python fraud_dashboard.py my_analysis.csv
 
 ### Step 4: View Results
 
-Open the generated HTML files in your web browser:
+You can view the results in two ways:
 
+**Option A: Streamlit App (Recommended)**
+This provides a modern, interactive web application.
+```bash
+streamlit run streamlit_app.py
+```
+
+**Option B: Static HTML Dashboard**
+Open the generated HTML files in your web browser:
 ```bash
 open fraud_dashboard.html
 ```

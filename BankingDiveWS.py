@@ -88,7 +88,7 @@ def scrape_banking_dive(num_articles=20, fraud_only=True):
         fraud_only (bool): If True, only collect fraud-related articles.
     """
     
-    base_url = "https://www.bankingdive.com/news/"
+    base_url = "https://www.bankingdive.com/"
     articles_data = []
     page_num = 1
     
@@ -99,13 +99,16 @@ def scrape_banking_dive(num_articles=20, fraud_only=True):
 
     print(f"Starting scraper... targeting {num_articles} articles.\n")
 
+    seen_urls = set()
+
     try:
         # Loop through pages until we have enough articles
         while len(articles_data) < num_articles:
             # Construct the URL for the current page
-            # page=1 is the same as the main /news/ page
             current_url = f"{base_url}?page={page_num}"
             print(f"Fetching page: {current_url}")
+            
+            time.sleep(1) # Add delay to avoid rate limiting
             
             # Make the HTTP request
             response = requests.get(current_url, headers=headers)
@@ -116,12 +119,6 @@ def scrape_banking_dive(num_articles=20, fraud_only=True):
             # Parse the HTML content
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            # New strategy: Banking Dive may use containers with classes that include
-            # 'rowfeed' (for example rowfeed items). Search for any elements whose
-            # class contains the substring 'rowfeed' and treat each as an article
-            # candidate. This is more robust than relying on a single <ul> wrapper.
-            # Removed the has_feed_class helper function as it's no longer needed
-
             # Find all article items in the feed
             articles = soup.find_all('li', class_='row feed__item')
             
@@ -145,23 +142,33 @@ def scrape_banking_dive(num_articles=20, fraud_only=True):
                 # Find the summary paragraph with class 'feed__description'
                 summary_element = article.find('p', class_='feed__description')
                 
-                # Find the date element
-                date_element = article.find('span', class_='feed__date')
+                # Find the date element - Search results use 'secondary-label' with "Posted:" text
+                date_element = article.find('span', class_='secondary-label')
+                if not date_element:
+                    # Fallback for standard feed
+                    date_element = article.find('span', class_='feed__date')
 
                 # If we found required elements, process the article
-                if title_link and summary_element:
+                if title_link:
                     title = title_link.get_text(strip=True)
-                    summary = summary_element.get_text(strip=True)
+                    summary = summary_element.get_text(strip=True) if summary_element else ""
                     article_url = title_link.get('href', '')
                     
                     # Make URL absolute if it's relative
                     if article_url and not article_url.startswith('http'):
                         article_url = f"https://www.bankingdive.com{article_url}"
                     
+                    # Check for duplicates
+                    if article_url in seen_urls:
+                        continue
+                    seen_urls.add(article_url)
+
                     # Extract date
                     article_date = ""
                     if date_element:
-                        article_date = date_element.get_text(strip=True)
+                        date_text = date_element.get_text(strip=True)
+                        # Clean up "Posted:" prefix if present
+                        article_date = date_text.replace('Posted:', '').strip()
                     
                     # Check for fraud keywords
                     combined_text = f"{title} {summary}"
@@ -193,8 +200,12 @@ def scrape_banking_dive(num_articles=20, fraud_only=True):
                         break
             
             # Go to the next page
+            # Go to the next page
             page_num += 1
 
+            if page_num > 200:
+                print("Reached page limit (200). Stopping.")
+                break
     except requests.exceptions.HTTPError as e:
         print(f"HTTP Error: {e}")
     except requests.exceptions.RequestException as e:
@@ -213,11 +224,9 @@ def scrape_banking_dive(num_articles=20, fraud_only=True):
 #
 # 2. Save the code as a .py file (e.g., scraper.py)
 # 3. Run it from your terminal:
-#    python scraper.py
-
 def main(argv=None):
     parser = argparse.ArgumentParser(description='Scrape Banking Dive news with fraud detection.')
-    parser.add_argument('--num', '-n', type=int, default=20, help='Number of articles to collect (default: 20)')
+    parser.add_argument('--num', '-n', type=int, default=5000, help='Number of articles to collect (default: 5000)')
     parser.add_argument('--csv', '-o', type=str, default=None, help='Path to CSV output file (optional)')
     parser.add_argument('--all', '-a', action='store_true', help='Collect all articles, not just fraud-related')
     args = parser.parse_args(argv)

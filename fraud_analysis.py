@@ -33,11 +33,11 @@ FRAUD_CATEGORIES = {
 
 # Risk level indicators
 HIGH_RISK_KEYWORDS = ['major breach', 'significant loss', 'millions', 'billions', 'widespread', 
-                      'critical', 'severe', 'massive', 'systemic', 'enforcement action', 
-                      'criminal charges', 'indictment', 'prosecution']
+                      'severe', 'massive', 'systemic', 'enforcement action', 
+                      'criminal charges', 'indictment', 'prosecution', 'fine', 'penalty']
 
 MEDIUM_RISK_KEYWORDS = ['warning', 'alert', 'concern', 'investigation', 'suspected', 'potential',
-                        'vulnerability', 'thousands', 'settlement', 'fine', 'penalty']
+                        'vulnerability', 'thousands', 'settlement', 'critical']
 
 LOW_RISK_KEYWORDS = ['prevention', 'protection', 'security measure', 'update', 'patch',
                      'awareness', 'training', 'advisory', 'guidance', 'best practice']
