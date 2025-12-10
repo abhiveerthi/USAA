@@ -166,16 +166,13 @@ def main():
     st.markdown(f"Analyzing **{len(filtered_df)}** articles for fraud patterns and risks.")
     
     # KPIs
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Total Articles", len(filtered_df))
     with col2:
         high_risk_count = len(filtered_df[filtered_df['risk_level'] == 'High'])
         st.metric("High Risk Alerts", high_risk_count, delta_color="inverse")
     with col3:
-        fraud_count = filtered_df['fraud_categories_str'].notna().sum()
-        st.metric("Fraud Related", fraud_count)
-    with col4:
         latest_date = filtered_df['parsed_date'].max()
         date_str = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else "Last 30 days"
         st.metric("Latest Update", date_str)
