@@ -1,44 +1,180 @@
- # Banking Dive Fraud Intelligence
+# USAA Fraud Research and Storytelling Project
 
- _Credits: Gustavo Franco · Abhi Veerthineni · Nick Jones · Riya Vadadoria_
+A comprehensive data analysis project that scrapes, analyzes, and visualizes fraud trends in the banking industry using Banking Dive articles.
 
- ## Project Overview
- - Goal: surface fraud-facing signals from recent Banking Dive coverage to inform narrative storytelling and prioritization for DTSC 3602 deliverables.
- - Inputs:
-   - `banking_dive_scraper.ipynb` for article harvesting.
-   - `banking_dive_fraud_visualizations.ipynb` to explore the high-risk subset and prototype visuals.
-   - `analysis.ipynb` (new “analysis” notebook) consolidates text mining and metrics referenced below.
-   - CSV files under `data/` with full article corpus, fraud-augmented labels, and the fraud-only subset.
+## Project Overview
 
- ## Snapshot Metrics
- | Metric | Value |
- | --- | --- |
- | Articles scraped | 200 |
- | Fraud-flagged articles | 16 (8 Wire/Check Fraud, 8 Money Laundering) |
- | Risk mix | 8 High risk vs. 8 Low risk (no Medium flags in current sample) |
- | Distinct fraud categories detected | 2 |
+This project collects banking news articles, identifies fraud-related content, performs NLP analysis, and creates interactive visualizations to tell a data-driven story about fraud trends in the financial industry.
 
- ## Key Findings
- 1. **Wire + check fraud dominates** the current Banking Dive coverage, splitting evenly with money-laundering mentions and highlighting continued vulnerability in payments rails.
- 2. **Legal and regulatory actions are the storytelling hook**: most fraud articles couple enforcement actions (CFPB, activist lawsuits) with governance failures, giving us ready-made narratives around compliance breakdowns.
- 3. **Geographic and demographic specificity stands out**: repeated references to Chinese American employees, South Carolina cases, and branch-level schemes suggest readers respond to localized, people-forward framing.
+## Features
 
- ## Common Trends Observed
- - Fraud stories cluster around merger-and-acquisition flashpoints (Comerica–Fifth Third, Fulton–Blue Foundry) where due diligence gaps are exposed.
- - Enforcement bodies (CFPB, state AGs, local prosecutors) drive momentum, creating clear timelines for storytelling.
- - Risk levels polarize: articles are either clearly high-risk enforcement events or low-risk governance notes—there is little middle ground, signaling that our pipeline should expect “spike” coverage rather than steady volume.
+- **Web Scraping**: Automated collection of banking news articles from Banking Dive
+- **Fraud Detection**: Keyword-based identification of fraud-related content
+- **Full Article Extraction**: Scrapes complete article text for in-depth analysis
+- **NLP Analysis**:
+  - Fraud categorization (check fraud, wire fraud, identity theft, etc.)
+  - Risk level assessment (High, Medium, Low)
+  - Sentiment analysis
+  - Keyword extraction
+- **Interactive Dashboards**: Plotly-based visualizations showing trends and patterns
+- **Comprehensive Reporting**: Automated summary reports
 
- ## Top 5 Keywords / Phrases
- - **Keywords (unigrams)**: Chinese, bank, check, said, employees.
- - **Phrases (bigrams)**: “Chinese American,” “Prosecutors said,” “Chinese Chinese,” “American employees,” “Plaintiffs said.”
+## Project Structure
 
- ## Top 3 Fraud Trends To Track
- 1. **Wire & Check Fraud Rings** – Half of all flagged stories cite overlapping wire/check abuse, often tied to branch-level overrides or coerced employees.
- 2. **Money-Laundering via Cross-Border Relationships** – The other half of the sample highlights laundering concerns, especially when international customer bases intersect with weak KYC controls.
- 3. **Regulatory Settlements Targeting Membership / Fee Structures** – CFPB vs. MoneyLion and similar cases show regulators zeroing in on fee-based loopholes (membership dues, ancillary services) that mask true APRs.
+```
+Studio3USAA/
+├── BankingDiveWS.py          # Web scraper with fraud detection
+├── fraud_analysis.py          # NLP analysis engine
+├── fraud_dashboard.py         # Visualization dashboard generator
+├── requirements.txt           # Python dependencies
+├── README.md                  # This file
+├── fraud_articles.csv         # Scraped articles (generated)
+├── fraud_analysis_results.csv # Analysis results (generated)
+└── fraud_dashboard.html       # Interactive dashboard (generated)
+```
 
- ## Next Steps
- - Expand scraping schedule to capture fresh Banking Dive posts weekly; rerun `analysis.ipynb` to refresh metrics.
- - Layer qualitative context (earnings transcripts, enforcement dockets) atop the existing timelines for better narrative pitches.
+## Getting Started
 
- ---
+### Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package manager)
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   cd "/Users/abhiv/DTSC USAA Project/Studio3USAA"
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Download NLTK data** (will happen automatically on first run):
+   ```bash
+   python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+   ```
+
+## Usage
+
+### Step 1: Scrape Articles
+
+Collect fraud-related articles from Banking Dive:
+
+```bash
+# Collect 20 fraud-related articles (default)
+python BankingDiveWS.py
+
+# Collect 50 fraud-related articles
+python BankingDiveWS.py --num 50
+
+# Collect all articles (not just fraud-related)
+python BankingDiveWS.py --num 30 --all
+
+# Specify custom output file
+python BankingDiveWS.py --csv my_articles.csv
+```
+
+**Output**: `fraud_articles.csv`
+
+### Step 2: Analyze Articles
+
+Perform NLP analysis on collected articles:
+
+```bash
+# Analyze default file (fraud_articles.csv)
+python fraud_analysis.py
+
+# Analyze custom file
+python fraud_analysis.py my_articles.csv
+```
+
+**Output**: `fraud_analysis_results.csv`
+
+### Step 3: Generate Dashboard
+
+Create interactive visualizations:
+
+```bash
+# Generate dashboard from default file
+python fraud_dashboard.py
+
+# Generate from custom file
+python fraud_dashboard.py my_analysis.csv
+```
+
+**Outputs**:
+- `fraud_dashboard.html` - Complete interactive dashboard
+- `fraud_categories_chart.html` - Category breakdown
+- `risk_levels_chart.html` - Risk distribution
+- `sentiment_chart.html` - Sentiment analysis
+- `fraud_summary_report.txt` - Text summary
+
+### Step 4: View Results
+
+You can view the results in two ways:
+
+**Option A: Streamlit App (Recommended)**
+This provides a modern, interactive web application.
+```bash
+streamlit run streamlit_app.py
+```
+
+**Option B: Static HTML Dashboard**
+Open the generated HTML files in your web browser:
+```bash
+open fraud_dashboard.html
+```
+
+## Fraud Categories Detected
+
+- **Check Fraud**: Forged/counterfeit checks
+- **Wire Fraud**: Electronic transfer fraud
+- **Identity Theft**: Synthetic identity, account takeover
+- **Credit Card Fraud**: Card cloning, skimming
+- **Cyber Crime**: Hacking, ransomware, phishing, data breaches
+- **Money Laundering**: AML violations, suspicious activity
+- **Embezzlement**: Internal fraud, employee theft
+- **Regulatory Compliance**: BSA, KYC, sanctions violations
+- **Other Financial Crime**: General fraud and scams
+
+## Risk Assessment Levels
+
+- **High**: Major breaches, significant losses, criminal charges
+- **Medium-High**: Investigations, enforcement actions, substantial concerns
+- **Medium**: Warnings, alerts, potential vulnerabilities
+- **Low**: Prevention measures, security updates, best practices
+- **Unknown**: Insufficient information to assess risk
+
+## Dashboard Features
+
+The interactive dashboard includes:
+
+1. **Fraud Category Distribution** - Bar chart showing frequency of each fraud type
+2. **Risk Level Breakdown** - Pie chart of risk levels
+3. **Sentiment Analysis** - Overall tone of fraud reporting
+4. **Top Keywords** - Most frequently mentioned terms
+5. **Timeline** - Fraud articles over time (if dates available)
+6. **Summary Statistics** - Key metrics and insights
+
+## Technical Details
+
+### Web Scraping
+- Uses BeautifulSoup for HTML parsing
+- Implements polite scraping with delays
+- Handles pagination automatically
+- Extracts: title, summary, date, URL, full content
+
+### NLP Analysis
+- NLTK for tokenization and stopword removal
+- Keyword frequency analysis
+- Pattern matching for categorization
+- Custom scoring for risk assessment
+
+### Visualization
+- Plotly for interactive charts
+- Color-coded risk levels
+- Responsive HTML dashboards
+- Export-ready formats

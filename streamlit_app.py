@@ -58,6 +58,9 @@ def create_fraud_category_chart(df):
     for cats in df['fraud_categories_str'].dropna():
         all_categories.extend([c.strip() for c in cats.split(',')])
     
+    # Replace 'Uncategorized' with 'No Fraud'
+    all_categories = ['No Fraud' if c == 'Uncategorized' else c for c in all_categories]
+    
     cat_counts = pd.Series(all_categories).value_counts()
     
     fig = px.bar(
@@ -174,7 +177,7 @@ def main():
         st.metric("Fraud Related", fraud_count)
     with col4:
         latest_date = filtered_df['parsed_date'].max()
-        date_str = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else "N/A"
+        date_str = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else "Last 30 days"
         st.metric("Latest Update", date_str)
 
     st.markdown("---")
