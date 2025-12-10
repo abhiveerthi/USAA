@@ -175,7 +175,7 @@ def main():
     with col3:
         latest_date = filtered_df['parsed_date'].max()
         date_str = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else "Last 30 days"
-        st.metric("Latest Update", date_str)
+        st.metric("Currently Displaying", date_str)
 
     st.markdown("---")
 
